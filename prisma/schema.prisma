@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model Source {
+  id          String   @id @default(uuid())
+  name        String
+  feedUrl     String   @unique
+  isActive    Boolean  @default(true)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  items      ContentItem[]
+  ingestions IngestionRun[]
+}
+
+model ContentItem {
+  id          String   @id @default(uuid())
+
+  sourceId    String
+  externalId  String   // ID from XML (guid, link, etc.)
+
+  title       String
+  summary     String?
+  url         String?
+  publishedAt DateTime?
+
+  createdAt   DateTime @default(now())
+
+  source      Source   @relation(fields: [sourceId], references: [id])
+
+  @@unique([sourceId, externalId])
+}
+
+model IngestionRun {
+  id        String   @id @default(uuid())
+  sourceId  String
+
+  status    IngestionStatus
+  error     String?
+
+  startedAt DateTime @default(now())
+  finishedAt DateTime?
+
+  source    Source   @relation(fields: [sourceId], references: [id])
+}
+
+enum IngestionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}

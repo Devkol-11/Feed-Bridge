@@ -1,27 +1,11 @@
 import { Response } from 'express';
-import { HttpStatusCode } from './httpStatusCodes.js';
-import { HttpStatusCodeType } from './httpStatusCodes.js';
 
 export class HttpHelpers {
-        static sendResponse(res: Response, statusCode: keyof HttpStatusCodeType | number, data: any) {
-                let code: number;
-
-                if (typeof statusCode == 'string') {
-                        code = HttpStatusCode[statusCode];
-                } else {
-                        code = statusCode;
-                }
-
-                return res.status(code).json({ data });
+        static sendResponse(res: Response, statusCode: number, data: any) {
+                return res.status(statusCode).json({ data });
         }
 
-        static sendError(res: Response, statusCode: keyof HttpStatusCodeType | number, errorMessage: any) {
-                let code: number;
-                if (typeof statusCode == 'string') {
-                        code = HttpStatusCode[statusCode];
-                } else {
-                        code = statusCode;
-                }
-                return res.status(code).json({ errorMessage });
+        static sendError(res: Response, statusCode: number, errorMessage: any) {
+                return res.status(statusCode).json({ errorMessage });
         }
 }
