@@ -1,30 +1,30 @@
 import { IdentityUser } from '../../domain/aggregates/identityUser.js';
-import { RefreshToken } from '../../domain/entities/refreshToken.js';
+import { RefreshToken } from '../../domain/aggregates/refreshToken.js';
 import { DomainErrors } from '../../domain/errors/domainErrors.js';
 import { DomainService } from '../../domain/service/domainService.js';
-import { IdentityRepositoryPort } from '../../infrastructure/ports/IdentityRepositoryPort.js'
+import { IdentityRepositoryPort } from '../../infrastructure/ports/identityRepositoryPort.js';
+import { RefreshTokenRepositoryPort } from '../../infrastructure/ports/refreshRepositoryTokenPort.js';
+import { IdentityEventBusPort } from '../../infrastructure/ports/identityEventBusPort.js';
 import { RegisterRequestDto, RegisterResponseDto } from '../dtos/domainDto.js';
+import { TransactionScriptPort } from '../../infrastructure/ports/transactionManagerPort.js';
 
 export class RegisterUser {
         constructor(
                 private readonly identityRepository: IdentityRepositoryPort,
-                private readonly domainService: DomainService // private readonly eventDispatcher : EventBusPort
+                private readonly refreshTokenRepository: RefreshTokenRepositoryPort,
+                private readonly domainService: DomainService,
+                private readonly unitOfWork: TransactionScriptPort,
+                private readonly eventDispatcher: IdentityEventBusPort
         ) {}
 
         async execute(data: RegisterRequestDto): Promise<RegisterResponseDto> {
                 const { email, password, firstName, lastName } = data;
 
-                console.log(`entered usecase ----- ${email}`);
-
                 const userExists = await this.identityRepository.existsByEmail(email);
-
-                console.log('db operation to find if user exists =  success');
 
                 if (userExists) throw new DomainErrors.UserAlreadyExistsError();
 
                 const passwordHash = await this.domainService.encryptPassword(password);
-
-                console.log('password encrypt success');
 
                 const user = IdentityUser.create({
                         email,
@@ -41,17 +41,20 @@ export class RegisterUser {
                         expiresAt: expiry
                 });
 
-                user.addRefreshToken(refreshToken);
-
-                await this.identityRepository.save(user);
+                await this.unitOfWork.run(async (trx) => {
+                        await this.identityRepository.save(user, trx);
+                        await this.refreshTokenRepository.save(refreshToken, trx);
+                });
 
                 const claim = user.getClaims();
 
                 const accessToken = this.domainService.generateAccessToken(claim);
 
-                console.log('end of register usecase reached');
+                const events = user.pullDomainEvents();
 
-                //DISPATCH DOMAIN EVENTS
+                for (const event of events) {
+                        await this.eventDispatcher.publish(event);
+                }
 
                 return {
                         message: 'Regisration successful ',

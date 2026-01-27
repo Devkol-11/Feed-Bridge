@@ -39,7 +39,7 @@ export interface ForgotPasswordRequestDto {
 }
 
 export interface ResetPasswordRequestDto {
-        token: string;
+        incomingToken: string;
         newPassword: string;
 }
 

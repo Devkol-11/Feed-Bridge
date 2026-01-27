@@ -3,16 +3,54 @@ import { LoginUser } from './application/usecases/loginUser.js';
 import { LogoutUser } from './application/usecases/logoutUser.js';
 import { ResetPassword } from './application/usecases/resetPassword.js';
 import { ForgotPassword } from './application/usecases/forgotPassword.js';
-import { IdentityRepository } from './infrastructure/adapters/identityRepository.js';
+import { IdentityRepository } from './infrastructure/adapters/repositories/identityRepo.js';
+import { ResetTokenRepository } from './infrastructure/adapters/repositories/resetTokenRepo.js';
+import { RefreshTokenRepository } from './infrastructure/adapters/repositories/refreshTokenRepo.js';
 import { DomainService } from './domain/service/domainService.js';
+import { RedisIdentityCache } from './infrastructure/adapters/identityCache.js';
+import { BullMQ_Identity_EventBus } from './infrastructure/adapters/identityEventBus.js';
+import { redisCache } from '@src/config/redis/cache/cache.js';
+import { PrismaTransactionManager } from './infrastructure/adapters/prismaTransactionManager.js';
 
-const identityRepository = new IdentityRepository();
+const redisIdentityCache = new RedisIdentityCache(redisCache);
+
+const identityRepository = new IdentityRepository(redisIdentityCache);
+
+const resetTokenReposiotry = new ResetTokenRepository();
+
+const refreshTokenRepository = new RefreshTokenRepository();
+
 const domainService = new DomainService();
 
+const bull_mq_identity_eventBus = new BullMQ_Identity_EventBus();
+
+const prismaTransactionManager = new PrismaTransactionManager();
+
 export const usecase = {
-        register: new RegisterUser(identityRepository, domainService),
-        login: new LoginUser(identityRepository, domainService),
-        logout: new LogoutUser(identityRepository),
-        forgotPassword: new ForgotPassword(identityRepository, domainService),
-        resetPassword: new ResetPassword(identityRepository, domainService)
+        register: new RegisterUser(
+                identityRepository,
+                refreshTokenRepository,
+                domainService,
+                prismaTransactionManager,
+                bull_mq_identity_eventBus
+        ),
+        login: new LoginUser(
+                identityRepository,
+                refreshTokenRepository,
+                prismaTransactionManager,
+                domainService
+        ),
+        logout: new LogoutUser(identityRepository, refreshTokenRepository, prismaTransactionManager),
+        forgotPassword: new ForgotPassword(
+                identityRepository,
+                resetTokenReposiotry,
+                domainService,
+                bull_mq_identity_eventBus
+        ),
+        resetPassword: new ResetPassword(
+                identityRepository,
+                resetTokenReposiotry,
+                prismaTransactionManager,
+                domainService
+        )
 };

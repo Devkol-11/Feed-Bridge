@@ -1,5 +1,7 @@
 import { DomainErrors } from '../../domain/errors/domainErrors.js';
 import { IdentityRepositoryPort } from '../../infrastructure/ports/identityRepositoryPort.js';
+import { RefreshTokenRepositoryPort } from '../../infrastructure/ports/refreshRepositoryTokenPort.js';
+import { TransactionScriptPort } from '../../infrastructure/ports/transactionManagerPort.js';
 
 interface LogoutRequestDto {
         userId: string;
@@ -7,27 +9,31 @@ interface LogoutRequestDto {
 }
 
 export class LogoutUser {
-        constructor(private readonly identityRepository: IdentityRepositoryPort) {}
+        constructor(
+                private readonly identityRepository: IdentityRepositoryPort,
+                private readonly refreshTokenRepository: RefreshTokenRepositoryPort,
+                private readonly unitOfWork: TransactionScriptPort
+        ) {}
 
         async execute(data: LogoutRequestDto): Promise<{ message: string }> {
                 const { userId, refreshToken } = data;
 
-                // 1. Fetch the Aggregate
                 const user = await this.identityRepository.findById(userId);
+
                 if (!user) {
                         throw new DomainErrors.UserNotFoundError();
                 }
 
-                // 2. Domain Logic: Revoke the specific token
-                // You should add a 'revokeToken' method to your IdentityUser aggregate
-                const wasRevoked = user.revokeToken(refreshToken);
+                const token = await this.refreshTokenRepository.findByValue(refreshToken);
 
-                if (!wasRevoked) {
-                        throw new DomainErrors.InvalidRefreshTokenError();
-                }
+                if (!token) throw new DomainErrors.InvalidRefreshTokenError();
 
-                // 3. Persist state
-                await this.identityRepository.save(user);
+                token.revoke();
+
+                await this.unitOfWork.run(async (trx) => {
+                        await this.refreshTokenRepository.save(token, trx);
+                        await this.identityRepository.save(user, trx);
+                });
 
                 return {
                         message: 'Logged out successfully'

@@ -1,7 +1,6 @@
 import { IdentityUser } from '../../domain/aggregates/identityUser.js';
-import { IdentityCachePort } from '../ports/IdentityCachePort.js';
-import { ICache } from '@src/config/index.js';
-
+import { IdentityCachePort } from '../ports/identityCachePort.js';
+import { ICache } from '@src/config/redis/cache/cache.js';
 export class RedisIdentityCache implements IdentityCachePort {
         private readonly prefix = 'identity:user:';
 

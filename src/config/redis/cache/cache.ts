@@ -1,6 +1,11 @@
+export interface ICache {
+        get<T>(key: string): Promise<T | null>;
+        set<T>(key: string, value: T, ttlSeconds: number): Promise<void>;
+        delete(key: string): Promise<void>;
+}
+
 import { redisClient } from '../client/redis.js';
 import { type Redis } from 'ioredis';
-import { ICache } from '@src/config/index.js';
 
 export class RedisCache implements ICache {
         private static instance: RedisCache | null = null;

@@ -1,25 +1,28 @@
-import { RefreshToken } from '../../domain/entities/refreshToken.js';
+import { RefreshToken } from '../../domain/aggregates/refreshToken.js';
 import { DomainErrors } from '../../domain/errors/domainErrors.js';
 import { DomainService } from '../../domain/service/domainService.js';
-import { IdentityRepositoryPort } from '../../infrastructure/ports/IdentityRepositoryPort.js';
+import { IdentityRepositoryPort } from '../../infrastructure/ports/identityRepositoryPort.js';
+import { RefreshTokenRepositoryPort } from '../../infrastructure/ports/refreshRepositoryTokenPort.js';
+import { TransactionScriptPort } from '../../infrastructure/ports/transactionManagerPort.js';
 import { LoginRequestDto, LoginResponseDto } from '../dtos/domainDto.js';
 
 export class LoginUser {
         constructor(
                 private readonly identityRepository: IdentityRepositoryPort,
+                private readonly refreshTokenRepository: RefreshTokenRepositoryPort,
+                private readonly unitOfWork: TransactionScriptPort,
                 private readonly domainService: DomainService
         ) {}
 
         async execute(data: LoginRequestDto): Promise<LoginResponseDto> {
                 const { email, password } = data;
 
-                // 1. Find user
                 const identityUser = await this.identityRepository.findByEmail(email);
+
                 if (!identityUser) {
                         throw new DomainErrors.InvalidCredentialsError();
                 }
 
-                // 2. Verify Password
                 const isPasswordValid = await this.domainService.decryptPassword({
                         plainPassword: password,
                         encryptedPassword: identityUser.props.passwordHash
@@ -29,7 +32,6 @@ export class LoginUser {
                         throw new DomainErrors.InvalidCredentialsError();
                 }
 
-                // 3. Generate new Refresh Token
                 const { value, expiry } = this.domainService.generateRefreshTokenWithExpiry();
 
                 const refreshToken = RefreshToken.create({
@@ -38,13 +40,11 @@ export class LoginUser {
                         expiresAt: expiry
                 });
 
-                // 4. Update Aggregate state (Add the new token)
-                identityUser.addRefreshToken(refreshToken);
+                await this.unitOfWork.run(async (trx) => {
+                        await this.identityRepository.save(identityUser, trx);
+                        await this.refreshTokenRepository.save(refreshToken, trx);
+                });
 
-                // 5. Persist the Aggregate
-                await this.identityRepository.save(identityUser);
-
-                // 6. Generate Access Token
                 const claims = identityUser.getClaims();
                 const accessToken = this.domainService.generateAccessToken(claims);
 

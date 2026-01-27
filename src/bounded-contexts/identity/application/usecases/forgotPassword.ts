@@ -1,12 +1,17 @@
 import { DomainErrors } from '../../domain/errors/domainErrors.js';
 import { DomainService } from '../../domain/service/domainService.js';
 import { IdentityRepositoryPort } from '../../infrastructure/ports/identityRepositoryPort.js';
-import { ResetToken } from '../../domain/entities/resetToken.js';
+import { ResetTokenRepositoryPort } from '../../infrastructure/ports/resetTokenRepositoryPort.js';
+import { ResetToken } from '../../domain/aggregates/resetToken.js';
+import { IdentityEventBusPort } from '../../infrastructure/ports/identityEventBusPort.js';
+import { DomainEvents } from '../../domain/events/domainEvents.js';
 
 export class ForgotPassword {
         constructor(
                 private readonly identityRepository: IdentityRepositoryPort,
-                private readonly domainService: DomainService
+                private readonly resetTokenRepository: ResetTokenRepositoryPort,
+                private readonly domainService: DomainService,
+                private readonly eventBus: IdentityEventBusPort
         ) {}
 
         async execute(email: string): Promise<{ message: string }> {
@@ -17,20 +22,27 @@ export class ForgotPassword {
 
                 const { value, expiry } = this.domainService.generateResetToken();
 
-                // We use our  ResetToken entity
-                // Logic: Add this to the user's token collection
                 const resetToken = ResetToken.create({
                         value,
                         identityUserId: user.id,
                         expiresAt: expiry
                 });
 
-                user.addResetToken(resetToken);
-                await this.identityRepository.save(user);
+                await this.resetTokenRepository.save(resetToken);
 
-                // DISPATCH EVENT: UserForgotPasswordEvent (contains the token for the email service)
-                // const events = user.pullDomainEvents();
-                // await this.eventDispatcher.dispatch(events);
+                user.addSingleEvent(
+                        new DomainEvents.UserForgotPasswordEvent({
+                                userId: user.id,
+                                email: user.props.email,
+                                token: resetToken.props.value
+                        })
+                );
+
+                const events = user.pullDomainEvents();
+
+                for (const event of events) {
+                        await this.eventBus.publish(event);
+                }
 
                 return { message: 'If an account exists, a reset link has been sent.' };
         }

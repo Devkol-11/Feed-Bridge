@@ -1,19 +1,20 @@
 import { IdentityEventBusPort } from '../ports/identityEventBusPort.js';
-import { redisClient } from '@src/config/redis/client/redis.js';
 import { IDomainEvents } from '@src/shared/ddd/domainEvents.js';
 import { Queue } from 'bullmq';
+import { Application_Queue } from '@src/config/redis/jobQueue/Queue.js';
 
 export class BullMQ_Identity_EventBus implements IdentityEventBusPort {
         private readonly queue: Queue;
         private readonly queueName: string = 'identity_events';
+        private readonly numberOfRetries: number = 5;
 
         constructor() {
-                this.queue = new Queue(this.queueName, { connection: redisClient });
+                this.queue = Application_Queue.create(this.queueName);
         }
 
         async publish(event: IDomainEvents): Promise<void> {
                 await this.queue.add(event.eventName, event, {
-                        attempts: 5,
+                        attempts: this.numberOfRetries,
                         backoff: {
                                 type: 'exponential',
                                 delay: 1000

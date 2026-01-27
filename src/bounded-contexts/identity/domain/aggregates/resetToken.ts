@@ -1,5 +1,6 @@
-import { Entity } from '@src/shared/ddd/entity.js';
+import { AggregateRoot } from '@src/shared/ddd/agggragateRoot.js';
 import { randomUUID } from 'node:crypto';
+import { DomainErrors } from '../errors/domainErrors.js';
 
 interface ResetTokenProps {
         id: string;
@@ -12,7 +13,7 @@ interface ResetTokenProps {
         updatedAt: Date;
 }
 
-export class ResetToken extends Entity<ResetTokenProps> {
+export class ResetToken extends AggregateRoot<ResetTokenProps> {
         private constructor(readonly props: Omit<ResetTokenProps, 'id'>, readonly id: string) {
                 super(props, id);
         }
@@ -50,6 +51,10 @@ export class ResetToken extends Entity<ResetTokenProps> {
                 );
         }
 
+        getprops() {
+                return { id: this.id, ...this.props };
+        }
+
         /**
          * Business Logic: Checks if the system clock has passed the expiry date
          */
@@ -60,10 +65,14 @@ export class ResetToken extends Entity<ResetTokenProps> {
         /**
          * Business Logic: Comprehensive check for the Aggregate
          */
-        public isActive(): boolean {
-                // A token is active ONLY if it hasn't been manually invalidated,
-                // hasn't been marked expired, and the clock hasn't run out.
-                return this.props.isValid && !this.props.isExpired && !this.isExpired();
+        public ensureIsActive(): void {
+                if (!this.props.isValid) {
+                        throw new DomainErrors.InvalidResetTokenError('Token has been manually invalidated.');
+                }
+
+                if (this.props.isExpired || this.isExpired()) {
+                        throw new DomainErrors.InvalidResetTokenError('Token has expired.');
+                }
         }
 
         /**
@@ -76,12 +85,4 @@ export class ResetToken extends Entity<ResetTokenProps> {
         }
 
         // --- Getters for easier Aggregate access ---
-
-        get value(): string {
-                return this.props.value;
-        }
-
-        get isValid(): boolean {
-                return this.props.isValid;
-        }
 }

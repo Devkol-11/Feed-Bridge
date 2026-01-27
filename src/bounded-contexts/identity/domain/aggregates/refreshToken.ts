@@ -1,4 +1,4 @@
-import { Entity } from '@src/shared/ddd/entity.js';
+import { AggregateRoot } from '@src/shared/ddd/agggragateRoot.js';
 import { randomUUID } from 'node:crypto';
 
 interface refreshTokenProps {
@@ -11,7 +11,7 @@ interface refreshTokenProps {
         updatedAt: Date;
 }
 
-export class RefreshToken extends Entity<refreshTokenProps> {
+export class RefreshToken extends AggregateRoot<refreshTokenProps> {
         private constructor(readonly props: Omit<refreshTokenProps, 'id'>, readonly id: string) {
                 super(props, id);
         }
@@ -45,18 +45,19 @@ export class RefreshToken extends Entity<refreshTokenProps> {
                 );
         }
 
-        isRevoked(): boolean {
+        getProps() {
+                return { id: this.id, ...this.props };
+        }
+
+        get isRevoked(): boolean {
                 if (this.props.isRevoked == true) {
                         return true;
                 }
+
                 return false;
         }
 
         revoke() {
                 this.props.isRevoked = true;
-        }
-
-        getValue() {
-                return this.props.value;
         }
 }

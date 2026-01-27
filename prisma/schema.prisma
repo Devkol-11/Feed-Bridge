@@ -29,7 +29,7 @@ model IdentityUser {
 
 model RefreshToken {
   id             String   @id @db.Uuid
-  // FIX: Added @db.Uuid to match IdentityUser.id
+  
   identityUserId String   @db.Uuid
   value          String   @unique
   expiresAt      DateTime
@@ -42,9 +42,8 @@ model RefreshToken {
 
 model ResetToken {
   id             String   @id @db.Uuid
-  // FIX: Added @db.Uuid to match IdentityUser.id
   identityUserId String   @db.Uuid
-  value          String
+  value          String  @unique
   expiresAt      DateTime
   isExpired      Boolean
   isValid        Boolean
@@ -96,7 +95,6 @@ enum ContentType {
 
 model AlertUser {
   id             String   @id @db.Uuid
-  // FIX: This likely also needs to match your IdentityUser if they are linked
   identityUserId String   @db.Uuid
   email          String
   isPaused       Boolean  @default(false)
