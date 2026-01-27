@@ -1,4 +1,4 @@
-import { IDomainEvents } from '@src/shared/ddd/domainEvents.js';
+import { IDomainEvents } from '@src/shared/ddd/domainEvents.Base.js';
 
 export namespace DomainEvents {
         export class ResetTokenAddedEvent implements IDomainEvents {

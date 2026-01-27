@@ -17,15 +17,15 @@ export class LoginUser {
         async execute(data: LoginRequestDto): Promise<LoginResponseDto> {
                 const { email, password } = data;
 
-                const identityUser = await this.identityRepository.findByEmail(email);
+                const user = await this.identityRepository.findByEmail(email);
 
-                if (!identityUser) {
+                if (!user) {
                         throw new DomainErrors.InvalidCredentialsError();
                 }
 
                 const isPasswordValid = await this.domainService.decryptPassword({
                         plainPassword: password,
-                        encryptedPassword: identityUser.props.passwordHash
+                        encryptedPassword: user.props.passwordHash
                 });
 
                 if (!isPasswordValid) {
@@ -36,29 +36,25 @@ export class LoginUser {
 
                 const refreshToken = RefreshToken.create({
                         value,
-                        identityUserId: identityUser.id,
+                        identityUserId: user.id,
                         expiresAt: expiry
                 });
 
                 await this.unitOfWork.run(async (trx) => {
-                        await this.identityRepository.save(identityUser, trx);
+                        await this.identityRepository.save(user, trx);
                         await this.refreshTokenRepository.save(refreshToken, trx);
                 });
 
-                const claims = identityUser.getClaims();
+                const claims = user.getClaims();
                 const accessToken = this.domainService.generateAccessToken(claims);
-
-                // 7. Dispatch Domain Events (e.g., UserLoggedInEvent)
-                // const events = identityUser.pullDomainEvents();
-                // await this.eventDispatcher.dispatch(events);
 
                 return {
                         message: 'Login successful',
                         data: {
-                                id: identityUser.id,
-                                email: identityUser.props.email,
-                                firstName: identityUser.props.firstName,
-                                lastName: identityUser.props.lastName
+                                id: user.id,
+                                email: user.props.email,
+                                firstName: user.props.firstName,
+                                lastName: user.props.lastName
                         },
                         tokens: {
                                 accessToken,

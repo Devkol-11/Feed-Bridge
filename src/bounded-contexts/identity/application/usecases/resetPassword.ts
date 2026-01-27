@@ -26,9 +26,9 @@ export class ResetPassword {
 
                 if (!user) throw new DomainErrors.InvalidResetTokenError('No user found for this token');
 
-                const newHash = await this.domainService.encryptPassword(newPassword);
+                const newPasswordHash = await this.domainService.encryptPassword(newPassword);
 
-                user.resetPassword(newHash);
+                user.resetPassword(newPasswordHash);
 
                 resetToken.invalidate();
 

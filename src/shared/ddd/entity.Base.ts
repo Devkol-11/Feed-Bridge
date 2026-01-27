@@ -9,4 +9,11 @@ export abstract class Entity<T> {
         public equals(object: Entity<T>): boolean {
                 return this.id == object.id;
         }
+
+        public getProps() {
+                return {
+                        id: this.id,
+                        ...this.props
+                };
+        }
 }

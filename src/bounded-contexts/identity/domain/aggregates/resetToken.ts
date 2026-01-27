@@ -1,4 +1,4 @@
-import { AggregateRoot } from '@src/shared/ddd/agggragateRoot.js';
+import { AggregateRoot } from '@src/shared/ddd/agggragateRoot.Base.js';
 import { randomUUID } from 'node:crypto';
 import { DomainErrors } from '../errors/domainErrors.js';
 

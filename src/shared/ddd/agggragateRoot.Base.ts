@@ -1,11 +1,15 @@
-import { Entity } from './entity.js';
-import { IDomainEvents } from './domainEvents.js';
+import { Entity } from './entity.Base.js';
+import { IDomainEvents } from './domainEvents.Base.js';
 
 export abstract class AggregateRoot<T> extends Entity<T> {
         private domainEvents: IDomainEvents[] = [];
 
         // Only internal methods or children can record events
         protected addDomainEvent(event: IDomainEvents): void {
+                this.domainEvents.push(event);
+        }
+
+        public addSingleEvent(event: IDomainEvents) {
                 this.domainEvents.push(event);
         }
 
@@ -18,5 +22,12 @@ export abstract class AggregateRoot<T> extends Entity<T> {
 
         private clearDomainEvents(): void {
                 this.domainEvents = [];
+        }
+
+        public getProps() {
+                return {
+                        id: this.id,
+                        ...this.props
+                };
         }
 }

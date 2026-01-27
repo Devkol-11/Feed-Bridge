@@ -58,14 +58,16 @@ enum IdentityStatus {
   SUSPENDED
 }
 
-model FeedSource {
-  id            String    @id @db.Uuid
-  name          String
-  type          FeedType
-  endpointUrl   String
-  isActive      Boolean   @default(true)
-  lastFetchedAt DateTime?
-  createdAt     DateTime
+model JobSource {
+  id              String    @id @db.Uuid
+  name            String    // e.g., "LinkedIn Engineering"
+  type            FeedType // RSS, API, SCRAPER
+  baseUrl         String    // The endpoint or site root
+  isEnabled       Boolean   @default(true)
+  lastIngestedAt  DateTime?
+  
+  // JobSources own their listings
+  listings        JobListing[] 
 }
 
 enum FeedType {
@@ -74,24 +76,30 @@ enum FeedType {
   CUSTOM_XML
 }
 
-model ContentItem {
-  id           String      @id @db.Uuid
-  feedSourceId String
-  externalId   String
-  title        String
-  body         String?
-  publishedAt  DateTime
-  contentType  ContentType
-  createdAt    DateTime
+model JobListing {
+  id             String   @id @db.Uuid
+  jobSourceId    String   @db.Uuid
+  externalJobId  String   // The ID from LinkedIn/Indeed
+  title          String
+  type          Job_Listing_Type
+  company        String
+  location       String
+  jobUrl         String
+  postedAt       DateTime
+  ingestedAt     DateTime @default(now())
 
-  @@unique([feedSourceId, externalId])
+  jobSource  JobSource @relation(fields: [jobSourceId] , references: [id])
+
+  @@unique([jobSourceId, externalJobId]) // Prevents duplicates
+
 }
 
-enum ContentType {
-  NEWS
-  JOB
-  BLOG
+enum Job_Listing_Type {
+  REMOTE
+  ONSITE
+  HYBRID
 }
+
 
 model AlertUser {
   id             String   @id @db.Uuid
@@ -104,7 +112,6 @@ model AlertUser {
 model AlertRule {
   id          String      @id @db.Uuid
   alertUserId String
-  contentType ContentType
   keyword     String?
   createdAt   DateTime
 }

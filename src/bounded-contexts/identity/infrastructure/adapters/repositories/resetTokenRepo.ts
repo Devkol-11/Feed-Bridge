@@ -61,4 +61,10 @@ export class ResetTokenRepository implements ResetTokenRepositoryPort {
 
                 return ResetToken.rehydrate(token);
         }
+
+        async delete(tokenId: string, trx?: Prisma.TransactionClient): Promise<void> {
+                const client = trx ? trx : dbClient;
+
+                await client.resetToken.delete({ where: { id: tokenId } });
+        }
 }

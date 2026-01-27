@@ -1,9 +1,9 @@
-import { AggregateRoot } from '@src/shared/ddd/agggragateRoot.js';
+import { AggregateRoot } from '@src/shared/ddd/agggragateRoot.Base.js';
 import { randomUUID } from 'crypto';
 import { IdentityStatus } from '../enums/domainEnums.js';
 import { DomainEvents } from '../events/domainEvents.js';
 import { DomainErrors } from '../errors/domainErrors.js';
-import { IDomainEvents } from '@src/shared/ddd/domainEvents.js';
+import { IDomainEvents } from '@src/shared/ddd/domainEvents.Base.js';
 
 interface IdentityUserProps {
         id: string;
@@ -78,10 +78,6 @@ export class IdentityUser extends AggregateRoot<IdentityUserProps> {
                                 email: this.props.email
                         })
                 );
-        }
-
-        public addSingleEvent(event: IDomainEvents): void {
-                this.addDomainEvent(event);
         }
 
         getProps() {

@@ -20,6 +20,13 @@ export class ForgotPassword {
                 // Even if user doesn't exist, we return a success message to prevent "Email Enumeration" attacks.
                 if (!user) return { message: 'If an account exists, a reset link has been sent.' };
 
+                // Ensuring only one active token at a time
+                const existingToken = await this.resetTokenRepository.findActiveByUserId(user.id);
+
+                if (existingToken) {
+                        existingToken.invalidate();
+                }
+
                 const { value, expiry } = this.domainService.generateResetToken();
 
                 const resetToken = ResetToken.create({
