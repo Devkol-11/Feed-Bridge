@@ -1,4 +1,4 @@
-import { IdentityEventBusPort } from '../ports/identityEventBusPort.js';
+import { IdentityEventBusPort } from '../../application/ports/identityEventBusPort.js';
 import { IDomainEvents } from '@src/shared/ddd/domainEvents.Base.js';
 import { Queue } from 'bullmq';
 import { Application_Queue } from '@src/config/redis/jobQueue/Queue.js';

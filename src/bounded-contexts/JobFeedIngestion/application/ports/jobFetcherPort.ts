@@ -10,5 +10,5 @@ export interface RawJobData {
 }
 
 export interface JobFetcherPort {
-        fetchJobs(source: JobSource): Promise<RawJobData[]>;
+        fetchJobs(url: string): Promise<RawJobData[]>;
 }

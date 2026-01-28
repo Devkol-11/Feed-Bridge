@@ -1,12 +1,12 @@
-import { IdentityUser } from '../../domain/aggregates/identityUser.js';
-import { RefreshToken } from '../../domain/aggregates/refreshToken.js';
-import { DomainErrors } from '../../domain/errors/domainErrors.js';
+import { IdentityUser } from '../../domain/model/aggregates/identityUser.js';
+import { RefreshToken } from '../../domain/model/aggregates/refreshToken.js';
+import { DomainErrors } from '../../domain/exceptions/domainErrors.js';
 import { DomainService } from '../../domain/service/domainService.js';
-import { IdentityRepositoryPort } from '../../infrastructure/ports/identityRepositoryPort.js';
-import { RefreshTokenRepositoryPort } from '../../infrastructure/ports/refreshRepositoryTokenPort.js';
-import { IdentityEventBusPort } from '../../infrastructure/ports/identityEventBusPort.js';
+import { IdentityRepositoryPort } from '../ports/identityRepositoryPort.js';
+import { RefreshTokenRepositoryPort } from '../ports/refreshRepositoryTokenPort.js';
+import { IdentityEventBusPort } from '../ports/identityEventBusPort.js';
 import { RegisterRequestDto, RegisterResponseDto } from '../dtos/domainDto.js';
-import { TransactionScriptPort } from '../../infrastructure/ports/transactionManagerPort.js';
+import { TransactionScriptPort } from '../ports/transactionManagerPort.js';
 
 export class RegisterUser {
         constructor(

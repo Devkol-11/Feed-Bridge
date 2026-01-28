@@ -9,17 +9,12 @@ export class PrismaJobSourceRepository implements JobSourceRepositoryPort {
                 if (!data) return null;
 
                 // Reconstitute the Aggregate from DB data
-                return JobSource.create({
-                        name: data.name,
-                        type: data.type as any,
-                        baseUrl: data.baseUrl,
-                        lastIngestedAt: data.lastIngestedAt || new Date()
-                });
+                return JobSource.rehydrate(data);
         }
 
         async save(source: JobSource, trx?: Prisma.TransactionClient): Promise<void> {
                 const client = trx ? trx : dbClient;
-                const data = source.getProps(); // Accessing props from your Base Entity
+                const data = source.getProps(); // Accessing props from the Base Entity
                 await client.jobSource.upsert({
                         where: { id: data.id }, // accessing protectaed id
                         update: { ...data },
@@ -30,6 +25,18 @@ export class PrismaJobSourceRepository implements JobSourceRepositoryPort {
         async findAllEnabled(): Promise<JobSource[]> {
                 const sources = await dbClient.jobSource.findMany({ where: { isEnabled: true } });
                 // Map all to JobSource entities...
-                return sources.map((s) => JobSource.create(s));
+                return sources.map((s) => JobSource.rehydrate(s));
+        }
+
+        async findByUrl(url: string): Promise<JobSource | null> {
+                const jobSource = await dbClient.jobSource.findFirst({ where: { baseUrl: url } });
+                if (!jobSource) return null;
+                return JobSource.rehydrate(jobSource);
+        }
+
+        async findAllActive(): Promise<JobSource[] | null> {
+                const activeSources = await dbClient.jobSource.findMany({ where: { isEnabled: true } });
+                if (!activeSources) return null;
+                return activeSources.map((source) => JobSource.rehydrate(source));
         }
 }

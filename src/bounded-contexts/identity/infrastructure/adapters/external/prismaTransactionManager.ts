@@ -1,6 +1,6 @@
 import { PrismaClient } from 'generated/prisma/client.js';
 import { dbClient } from '@src/config/prisma/prisma.js';
-import { TransactionScriptPort, TransactionWork } from '../ports/transactionManagerPort.js';
+import { TransactionScriptPort, TransactionWork } from '../../application/ports/transactionManagerPort.js';
 
 export class PrismaTransactionManager implements TransactionScriptPort {
         private readonly client: PrismaClient;

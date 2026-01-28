@@ -15,15 +15,15 @@ export interface JobListingProps {
         company: CompanyName;
         location: JobLocation;
         jobUrl: JobUrl;
-        postedAt: string;
-        ingestedAt: string;
+        postedAt: Date;
+        ingestedAt: Date;
 }
+
 export class JobListing extends Entity<JobListingProps> {
         private constructor(props: Omit<JobListingProps, 'id'>, id: string) {
                 super(props, id);
         }
 
-        // We accept raw data here and turn it into Value Objects
         static create(props: Omit<JobListingProps, 'id'>): JobListing {
                 const id = randomUUID();
                 return new JobListing(props, id);

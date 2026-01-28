@@ -3,14 +3,14 @@ import { LoginUser } from './application/usecases/loginUser.js';
 import { LogoutUser } from './application/usecases/logoutUser.js';
 import { ResetPassword } from './application/usecases/resetPassword.js';
 import { ForgotPassword } from './application/usecases/forgotPassword.js';
-import { IdentityRepository } from './infrastructure/adapters/repositories/identityRepo.js';
-import { ResetTokenRepository } from './infrastructure/adapters/repositories/resetTokenRepo.js';
-import { RefreshTokenRepository } from './infrastructure/adapters/repositories/refreshTokenRepo.js';
+import { IdentityRepository } from './infrastructure/adapters/perisitence/identityRepo.js';
+import { ResetTokenRepository } from './infrastructure/adapters/perisitence/resetTokenRepo.js';
+import { RefreshTokenRepository } from './infrastructure/adapters/perisitence/refreshTokenRepo.js';
 import { DomainService } from './domain/service/domainService.js';
-import { RedisIdentityCache } from './infrastructure/adapters/identityCache.js';
-import { BullMQ_Identity_EventBus } from './infrastructure/adapters/identityEventBus.js';
+import { RedisIdentityCache } from './infrastructure/adapters/external/identityCache.js';
+import { BullMQ_Identity_EventBus } from './infrastructure/adapters/external/identityEventBus.js';
 import { redisCache } from '@src/config/redis/cache/cache.js';
-import { PrismaTransactionManager } from './infrastructure/adapters/prismaTransactionManager.js';
+import { PrismaTransactionManager } from './infrastructure/adapters/external/prismaTransactionManager.js';
 
 const redisIdentityCache = new RedisIdentityCache(redisCache);
 

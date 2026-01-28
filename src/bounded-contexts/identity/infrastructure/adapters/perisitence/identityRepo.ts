@@ -1,13 +1,13 @@
 import { Prisma } from 'generated/prisma/client.js';
 import { dbClient } from '@src/config/prisma/prisma.js';
 import { TransactionClient } from 'generated/prisma/internal/prismaNamespace.js';
-import { IdentityUser } from '../../../domain/aggregates/identityUser.js';
-import { RefreshToken } from '../../../domain/aggregates/refreshToken.js';
-import { ResetToken } from '../../../domain/aggregates/resetToken.js';
-import { IdentityRepositoryPort } from '../../ports/identityRepositoryPort.js';
-import { DomainErrors } from '../../../domain/errors/domainErrors.js';
+import { IdentityUser } from '../../../domain/model/aggregates/identityUser.js';
+import { RefreshToken } from '../../../domain/model/aggregates/refreshToken.js';
+import { ResetToken } from '../../../domain/model/aggregates/resetToken.js';
+import { IdentityRepositoryPort } from '../../../application/ports/identityRepositoryPort.js';
+import { DomainErrors } from '../../../domain/exceptions/domainErrors.js';
 import { HttpStatusCode } from '@src/shared/http/httpStatusCodes.js';
-import { IdentityCachePort } from '../../ports/identityCachePort.js';
+import { IdentityCachePort } from '../../../application/ports/identityCachePort.js';
 
 export class IdentityRepository implements IdentityRepositoryPort {
         constructor(private readonly cache: IdentityCachePort) {}
@@ -77,14 +77,12 @@ export class IdentityRepository implements IdentityRepositoryPort {
 
         async findByEmail(email: string): Promise<IdentityUser | null> {
                 const user = await dbClient.identityUser.findUnique({
-                        where: { email },
+                        where: { email }
                 });
 
                 if (!user) return null;
                 return this.mapToDomain(user);
         }
-
-        
 
         async findById(id: string): Promise<IdentityUser | null> {
                 const cachedData = await this.cache.getUser(id);

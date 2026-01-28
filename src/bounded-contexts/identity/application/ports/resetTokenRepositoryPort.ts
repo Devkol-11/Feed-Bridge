@@ -1,4 +1,4 @@
-import { ResetToken } from '../../domain/aggregates/resetToken.js';
+import { ResetToken } from '../../domain/model/aggregates/resetToken.js';
 import type { Prisma } from 'generated/prisma/client.js';
 
 export interface ResetTokenRepositoryPort {

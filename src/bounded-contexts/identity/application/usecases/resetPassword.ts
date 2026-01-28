@@ -1,9 +1,9 @@
-import { DomainErrors } from '../../domain/errors/domainErrors.js';
+import { DomainErrors } from '../../domain/exceptions/domainErrors.js';
 import { DomainService } from '../../domain/service/domainService.js';
-import { ResetTokenRepositoryPort } from '../../infrastructure/ports/resetTokenRepositoryPort.js';
-import { IdentityRepositoryPort } from '../../infrastructure/ports/identityRepositoryPort.js';
+import { ResetTokenRepositoryPort } from '../ports/resetTokenRepositoryPort.js';
+import { IdentityRepositoryPort } from '../ports/identityRepositoryPort.js';
 import { ResetPasswordRequestDto } from '../dtos/domainDto.js';
-import { TransactionScriptPort } from '../../infrastructure/ports/transactionManagerPort.js';
+import { TransactionScriptPort } from '../ports/transactionManagerPort.js';
 
 export class ResetPassword {
         constructor(

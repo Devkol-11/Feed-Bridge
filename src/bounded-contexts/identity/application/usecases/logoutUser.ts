@@ -1,7 +1,7 @@
-import { DomainErrors } from '../../domain/errors/domainErrors.js';
-import { IdentityRepositoryPort } from '../../infrastructure/ports/identityRepositoryPort.js';
-import { RefreshTokenRepositoryPort } from '../../infrastructure/ports/refreshRepositoryTokenPort.js';
-import { TransactionScriptPort } from '../../infrastructure/ports/transactionManagerPort.js';
+import { DomainErrors } from '../../domain/exceptions/domainErrors.js';
+import { IdentityRepositoryPort } from '../ports/identityRepositoryPort.js';
+import { RefreshTokenRepositoryPort } from '../ports/refreshRepositoryTokenPort.js';
+import { TransactionScriptPort } from '../ports/transactionManagerPort.js';
 
 interface LogoutRequestDto {
         userId: string;

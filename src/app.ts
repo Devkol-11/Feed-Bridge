@@ -2,10 +2,12 @@ import Express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import { IdentityRoutes } from './bounded-contexts/identity/infrastructure/http/routes/routes.js';
+import { JobFeedIngestionRoutes } from './bounded-contexts/JobFeedIngestion/infrastructure/http/routes/routes.js';
 import { applicationErrorHandler } from './shared/middleware/gloalErrorHandler.js';
 
 export function initializeApplication(): Express.Application {
         const identityRoutes = IdentityRoutes();
+        const jobFeedIngestionRoutes = JobFeedIngestionRoutes();
 
         const app = Express();
 
@@ -19,6 +21,7 @@ export function initializeApplication(): Express.Application {
         app.use(cors({ origin: '*' }));
 
         app.use('/api/v1/identity', identityRoutes);
+        app.use('/api/v1/jobFeeds', jobFeedIngestionRoutes);
 
         app.use(applicationErrorHandler);
         return app;

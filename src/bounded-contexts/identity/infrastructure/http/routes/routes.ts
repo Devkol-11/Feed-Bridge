@@ -21,16 +21,12 @@ export function IdentityRoutes() {
                 protectHandler(async (req, res) => {
                         const { email, firstName, lastName, password } = req.body as RegisterRequestDto;
 
-                        console.log('Calling the usecase...');
-
                         const response = await usecase.register.execute({
                                 email,
                                 firstName,
                                 lastName,
                                 password
                         });
-
-                        console.log('response gotten from usecase...');
 
                         const { tokens, ...data } = response;
 
@@ -71,9 +67,9 @@ export function IdentityRoutes() {
                 '/reset-password',
                 validate(schemas.ResetPasswordSchema),
                 protectHandler(async (req, res) => {
-                        const { token, newPassword } = req.body as ResetPasswordRequestDto;
+                        const { incomingToken, newPassword } = req.body as ResetPasswordRequestDto;
 
-                        const response = await usecase.resetPassword.execute({ token, newPassword });
+                        const response = await usecase.resetPassword.execute({ incomingToken, newPassword });
 
                         return HttpHelpers.sendResponse(res, HttpStatusCode.CREATED, response);
                 })

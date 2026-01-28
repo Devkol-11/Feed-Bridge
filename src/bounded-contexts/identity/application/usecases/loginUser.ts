@@ -1,9 +1,9 @@
-import { RefreshToken } from '../../domain/aggregates/refreshToken.js';
-import { DomainErrors } from '../../domain/errors/domainErrors.js';
+import { RefreshToken } from '../../domain/model/aggregates/refreshToken.js';
+import { DomainErrors } from '../../domain/exceptions/domainErrors.js';
 import { DomainService } from '../../domain/service/domainService.js';
-import { IdentityRepositoryPort } from '../../infrastructure/ports/identityRepositoryPort.js';
-import { RefreshTokenRepositoryPort } from '../../infrastructure/ports/refreshRepositoryTokenPort.js';
-import { TransactionScriptPort } from '../../infrastructure/ports/transactionManagerPort.js';
+import { IdentityRepositoryPort } from '../ports/identityRepositoryPort.js';
+import { RefreshTokenRepositoryPort } from '../ports/refreshRepositoryTokenPort.js';
+import { TransactionScriptPort } from '../ports/transactionManagerPort.js';
 import { LoginRequestDto, LoginResponseDto } from '../dtos/domainDto.js';
 
 export class LoginUser {

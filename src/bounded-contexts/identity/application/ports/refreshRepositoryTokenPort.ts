@@ -1,4 +1,4 @@
-import { RefreshToken } from '../../domain/aggregates/refreshToken.js';
+import { RefreshToken } from '../../domain/model/aggregates/refreshToken.js';
 import type { Prisma } from 'generated/prisma/client.js';
 
 export interface RefreshTokenRepositoryPort {

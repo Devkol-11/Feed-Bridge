@@ -18,6 +18,7 @@ model IdentityUser {
   firstName    String
   lastName     String
   email        String         @unique
+  role        IdentityUserRole  @default(USER)
   passwordHash String
   status       IdentityStatus
   createdAt    DateTime
@@ -25,6 +26,11 @@ model IdentityUser {
 
   refreshTokens RefreshToken[]
   resetTokens   ResetToken[]
+}
+
+enum IdentityUserRole {
+  ADMIN
+  USER 
 }
 
 model RefreshToken {
@@ -60,8 +66,10 @@ enum IdentityStatus {
 
 model JobSource {
   id              String    @id @db.Uuid
-  name            String    // e.g., "LinkedIn Engineering"
+name      String   // "Remotive Jobs" (For the UI)
+  provider  String   // "REMOTIVE" (For the Factory)
   type            FeedType // RSS, API, SCRAPER
+
   baseUrl         String    // The endpoint or site root
   isEnabled       Boolean   @default(true)
   lastIngestedAt  DateTime?

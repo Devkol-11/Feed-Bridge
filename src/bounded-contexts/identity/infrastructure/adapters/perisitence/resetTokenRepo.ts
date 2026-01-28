@@ -1,5 +1,5 @@
-import { ResetTokenRepositoryPort } from '../../ports/resetTokenRepositoryPort.js';
-import { ResetToken } from '@src/bounded-contexts/identity/domain/aggregates/resetToken.js';
+import { ResetTokenRepositoryPort } from '../../../application/ports/resetTokenRepositoryPort.js';
+import { ResetToken } from '@src/bounded-contexts/identity/domain/model/aggregates/resetToken.js';
 import { dbClient } from '@src/config/prisma/prisma.js';
 import type { Prisma } from 'generated/prisma/client.js';
 

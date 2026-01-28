@@ -1,15 +1,15 @@
 import { AggregateRoot } from '@src/shared/ddd/agggragateRoot.Base.js';
 import { randomUUID } from 'crypto';
-import { IdentityStatus } from '../enums/domainEnums.js';
-import { DomainEvents } from '../events/domainEvents.js';
-import { DomainErrors } from '../errors/domainErrors.js';
-import { IDomainEvents } from '@src/shared/ddd/domainEvents.Base.js';
+import { IdentityUserRole } from '../../enums/domainEnums.js';
+import { IdentityStatus } from '../../enums/domainEnums.js';
+import { DomainEvents } from '../../events/domainEvents.js';
 
 interface IdentityUserProps {
         id: string;
         email: string;
         firstName: string;
         lastName: string;
+        role: IdentityUserRole;
         passwordHash: string;
         status: IdentityStatus;
         createdAt: Date;
@@ -31,6 +31,7 @@ export class IdentityUser extends AggregateRoot<IdentityUserProps> {
                                 email: props.email,
                                 firstName: props.firstName,
                                 lastName: props.lastName,
+                                role: IdentityUserRole.USER,
                                 passwordHash: props.passwordHash,
                                 status: IdentityStatus.ACTIVE,
                                 createdAt: new Date(),
@@ -52,6 +53,7 @@ export class IdentityUser extends AggregateRoot<IdentityUserProps> {
                                 email: props.email,
                                 firstName: props.firstName,
                                 lastName: props.lastName,
+                                role: props.role,
                                 passwordHash: props.passwordHash,
                                 status: props.status,
                                 createdAt: props.createdAt,

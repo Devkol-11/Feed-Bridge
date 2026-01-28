@@ -1,5 +1,5 @@
-import { RefreshToken } from '@src/bounded-contexts/identity/domain/aggregates/refreshToken.js';
-import { RefreshTokenRepositoryPort } from '../../ports/refreshRepositoryTokenPort.js';
+import { RefreshToken } from '@src/bounded-contexts/identity/domain/model/aggregates/refreshToken.js';
+import { RefreshTokenRepositoryPort } from '../../../application/ports/refreshRepositoryTokenPort.js';
 import { dbClient } from '@src/config/prisma/prisma.js';
 import { type Prisma } from 'generated/prisma/client.js';
 

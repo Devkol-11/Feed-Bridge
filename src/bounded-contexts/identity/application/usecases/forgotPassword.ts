@@ -1,9 +1,9 @@
-import { DomainErrors } from '../../domain/errors/domainErrors.js';
+import { DomainErrors } from '../../domain/exceptions/domainErrors.js';
 import { DomainService } from '../../domain/service/domainService.js';
-import { IdentityRepositoryPort } from '../../infrastructure/ports/identityRepositoryPort.js';
-import { ResetTokenRepositoryPort } from '../../infrastructure/ports/resetTokenRepositoryPort.js';
-import { ResetToken } from '../../domain/aggregates/resetToken.js';
-import { IdentityEventBusPort } from '../../infrastructure/ports/identityEventBusPort.js';
+import { IdentityRepositoryPort } from '../ports/identityRepositoryPort.js';
+import { ResetTokenRepositoryPort } from '../ports/resetTokenRepositoryPort.js';
+import { ResetToken } from '../../domain/model/aggregates/resetToken.js';
+import { IdentityEventBusPort } from '../ports/identityEventBusPort.js';
 import { DomainEvents } from '../../domain/events/domainEvents.js';
 
 export class ForgotPassword {

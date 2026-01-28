@@ -5,12 +5,12 @@ import { JobUrl } from '../valueObjects/jobUrl.js';
 import { CompanyName } from '../valueObjects/companyName.js';
 import { JobLocation } from '../valueObjects/jobLocation.js';
 import { JobTitle } from '../valueObjects/jobTitle.js';
-import { SourceFeedEnumType } from '../../enums/domainEnums.js';
-import { omit } from 'zod/mini';
+import { SourceFeedEnumType, JobListingEnum } from '../../enums/domainEnums.js';
 
 export interface JobSourceProps {
         id: string;
         name: string;
+        provider: string;
         type: SourceFeedEnumType;
         baseUrl: string;
         isEnabled: boolean;
@@ -37,6 +37,7 @@ export class JobSource extends AggregateRoot<JobSourceProps> {
                         {
                                 name: props.name,
                                 type: props.type,
+                                provider: props.provider.toUpperCase(),
                                 baseUrl: props.baseUrl,
                                 isEnabled: true,
                                 lastIngestedAt: props.lastIngestedAt
@@ -51,6 +52,7 @@ export class JobSource extends AggregateRoot<JobSourceProps> {
                         {
                                 name: props.name,
                                 type: props.type,
+                                provider: props.provider.toUpperCase(),
                                 baseUrl: props.baseUrl,
                                 isEnabled: props.isEnabled,
                                 lastIngestedAt: props.lastIngestedAt
@@ -71,9 +73,21 @@ export class JobSource extends AggregateRoot<JobSourceProps> {
                         company: new CompanyName({ value: rawData.company }),
                         location: new JobLocation({ value: rawData.location }),
                         jobUrl: new JobUrl({ value: rawData.url }),
-                        type: 'REMOTE',
-                        postedAt: rawData.publishedAt.toISOString(),
-                        ingestedAt: new Date().toISOString()
+                        type: JobListingEnum.REMOTE,
+                        postedAt: rawData.publishedAt,
+                        ingestedAt: new Date()
                 });
+        }
+
+        public markIngested(): void {
+                this.props.lastIngestedAt = new Date();
+        }
+
+        public disable(): void {
+                this.props.isEnabled = false;
+        }
+
+        public enable(): void {
+                this.props.isEnabled = true;
         }
 }
