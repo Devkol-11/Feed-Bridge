@@ -14,11 +14,11 @@ datasource db {
 }
 
 model IdentityUser {
-  id           String         @id @db.Uuid // This is a UUID
+  id           String           @id @db.Uuid // This is a UUID
   firstName    String
   lastName     String
-  email        String         @unique
-  role        IdentityUserRole  @default(USER)
+  email        String           @unique
+  role         IdentityUserRole @default(USER)
   passwordHash String
   status       IdentityStatus
   createdAt    DateTime
@@ -30,12 +30,12 @@ model IdentityUser {
 
 enum IdentityUserRole {
   ADMIN
-  USER 
+  USER
 }
 
 model RefreshToken {
-  id             String   @id @db.Uuid
-  
+  id String @id @db.Uuid
+
   identityUserId String   @db.Uuid
   value          String   @unique
   expiresAt      DateTime
@@ -49,7 +49,7 @@ model RefreshToken {
 model ResetToken {
   id             String   @id @db.Uuid
   identityUserId String   @db.Uuid
-  value          String  @unique
+  value          String   @unique
   expiresAt      DateTime
   isExpired      Boolean
   isValid        Boolean
@@ -65,17 +65,17 @@ enum IdentityStatus {
 }
 
 model JobSource {
-  id              String    @id @db.Uuid
-name      String   // "Remotive Jobs" (For the UI)
-  provider  String   // "REMOTIVE" (For the Factory)
-  type            FeedType // RSS, API, SCRAPER
+  id       String   @id @db.Uuid
+  name     String // "Remotive Jobs" (For the UI)
+  provider String // "REMOTIVE" (For the Factory)
+  type     FeedType // RSS, API, SCRAPER
 
-  baseUrl         String    // The endpoint or site root
-  isEnabled       Boolean   @default(true)
-  lastIngestedAt  DateTime?
-  
+  baseUrl        String // The endpoint or site root
+  isEnabled      Boolean   @default(true)
+  lastIngestedAt DateTime?
+
   // JobSources own their listings
-  listings        JobListing[] 
+  listings JobListing[]
 }
 
 enum FeedType {
@@ -85,21 +85,24 @@ enum FeedType {
 }
 
 model JobListing {
-  id             String   @id @db.Uuid
-  jobSourceId    String   @db.Uuid
-  externalJobId  String   // The ID from LinkedIn/Indeed
-  title          String
-  type          Job_Listing_Type
-  company        String
-  location       String
-  jobUrl         String
-  postedAt       DateTime
-  ingestedAt     DateTime @default(now())
+  id            String   @id @db.Uuid
+  jobSourceId   String   @db.Uuid
+  externalJobId String // The ID from the source (e.g., Remotive ID)
+  title         String
+  category      String? // New: "Software Development", "DevOps", etc.
+  salary        String?
+  type          String? // Changed to String? because Remotive says it's optional
+  company       String
+  location      String // "Worldwide", "Remote", "USA"
+  jobUrl        String   @unique // Added unique here as well for safety
+  postedAt      DateTime
+  ingestedAt    DateTime @default(now())
 
-  jobSource  JobSource @relation(fields: [jobSourceId] , references: [id])
+  jobSource JobSource @relation(fields: [jobSourceId], references: [id])
 
-  @@unique([jobSourceId, externalJobId]) // Prevents duplicates
-
+  @@unique([jobSourceId, externalJobId])
+  @@index([category]) // Indexing for fast filtering by category
+  @@index([location]) // Indexing for fast filtering by location
 }
 
 enum Job_Listing_Type {
@@ -107,7 +110,6 @@ enum Job_Listing_Type {
   ONSITE
   HYBRID
 }
-
 
 model AlertUser {
   id             String   @id @db.Uuid
@@ -118,7 +120,7 @@ model AlertUser {
 }
 
 model AlertRule {
-  id          String      @id @db.Uuid
+  id          String   @id @db.Uuid
   alertUserId String
   keyword     String?
   createdAt   DateTime

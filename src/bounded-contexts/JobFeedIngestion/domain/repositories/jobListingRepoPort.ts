@@ -1,4 +1,4 @@
-import { JobListing } from '../../domain/model/entities/jobListing.js';
+import { JobListing } from '../model/entities/jobListing.js';
 import type { Prisma } from 'generated/prisma/client.js';
 
 export interface JobListingRepositoryPort {

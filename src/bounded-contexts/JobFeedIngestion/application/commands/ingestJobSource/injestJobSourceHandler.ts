@@ -1,19 +1,15 @@
-import { JobSource } from '../../domain/model/aggregates/jobSource.js';
-import { JobSourceRepositoryPort } from '../ports/jobSourceRepoPort.js';
-import { JobListingRepositoryPort } from '../ports/jobListingRepoPort.js';
-import { JobFetcherPort } from '../ports/jobFetcherPort.js';
+import { JobSourceRepositoryPort } from '../../../domain/repositories/jobSourceRepoPort.js';
+import { JobListingRepositoryPort } from '../../../domain/repositories/jobListingRepoPort.js';
+import { IngestJobsCommand } from './ingestJobSourceCommand.js';
+import { JobFetcherPort } from '../../ports/jobFetcherPort.js';
 
-export interface IngestJobsRequest {
-        sourceId: string;
-}
-
-export class IngestJobs {
+export class IngestJobSources {
         constructor(
                 private readonly jobSourceRepository: JobSourceRepositoryPort,
                 private readonly jobListingRepository: JobListingRepositoryPort
         ) {}
 
-        async execute(request: IngestJobsRequest, jobFetcher: JobFetcherPort): Promise<void> {
+        async execute(request: IngestJobsCommand, jobFetcher: JobFetcherPort): Promise<void> {
                 const jobSource = await this.jobSourceRepository.findById(request.sourceId);
 
                 if (!jobSource) {

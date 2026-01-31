@@ -1,16 +1,17 @@
-import { JobSourceRepositoryPort } from '../../application/ports/jobSourceRepoPort.js';
-import { IngestJobs } from '../../application/usecases/ingestJobs.js';
+import { JobSourceRepositoryPort } from '../../domain/repositories/jobSourceRepoPort.js';
+import { IngestJobSources } from '../../application/commands/ingestJobSource/injestJobSourceHandler.js';
 import { JobFetcherFactory } from '../factories/jobFetcherFactory.js';
 
-export class IngestionCron {
+export class jobIngestionCron {
         constructor(
                 private readonly jobSourceRepository: JobSourceRepositoryPort,
-                private readonly ingestionUseCase: IngestJobs,
+                private readonly ingestionUseCase: IngestJobSources,
                 private readonly jobFetcherFactory: JobFetcherFactory
         ) {}
 
         async run() {
                 const activeSources = await this.jobSourceRepository.findAllActive();
+
                 if (!activeSources) throw new Error('No Active Job Sources At the moment');
 
                 // get the tool from the factory based on the name

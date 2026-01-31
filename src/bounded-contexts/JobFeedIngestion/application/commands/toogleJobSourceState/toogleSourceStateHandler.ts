@@ -1,10 +1,10 @@
-import { JobSourceRepositoryPort } from '../ports/jobSourceRepoPort.js';
-import { ToggleSourceStateRequest } from '../dtos/useCaseDTO.js';
+import { JobSourceRepositoryPort } from '../../../domain/repositories/jobSourceRepoPort.js';
+import { ToggleJobSourceStateCommand } from './toogleJobSourceStateCommand.js';
 
 export class ToogleSourceState {
         constructor(private readonly jobSourceRepository: JobSourceRepositoryPort) {}
 
-        async execute(dto: ToggleSourceStateRequest): Promise<void> {
+        async execute(dto: ToggleJobSourceStateCommand): Promise<void> {
                 const jobSource = await this.jobSourceRepository.findById(dto.sourceId);
 
                 if (!jobSource) {

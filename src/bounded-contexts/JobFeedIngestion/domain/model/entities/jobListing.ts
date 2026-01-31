@@ -13,6 +13,8 @@ export interface JobListingProps {
         title: JobTitle;
         type: JobListingEnumType;
         company: CompanyName;
+        category?: string;
+        salary?: string;
         location: JobLocation;
         jobUrl: JobUrl;
         postedAt: Date;
@@ -37,6 +39,8 @@ export class JobListing extends Entity<JobListingProps> {
                                 title: props.title,
                                 type: props.type,
                                 company: props.company,
+                                category: props.category,
+                                salary: props.salary,
                                 location: props.location,
                                 jobUrl: props.jobUrl,
                                 postedAt: props.postedAt,

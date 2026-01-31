@@ -1,6 +1,6 @@
 import { dbClient } from '@src/config/prisma/prisma.js';
 import type { Prisma } from 'generated/prisma/client.js';
-import { JobSourceRepositoryPort } from '@src/bounded-contexts/JobFeedIngestion/application/ports/jobSourceRepoPort.js';
+import { JobSourceRepositoryPort } from '@src/bounded-contexts/JobFeedIngestion/domain/repositories/jobSourceRepoPort.js';
 import { JobSource } from '@src/bounded-contexts/JobFeedIngestion/domain/model/aggregates/jobSource.js';
 
 export class PrismaJobSourceRepository implements JobSourceRepositoryPort {

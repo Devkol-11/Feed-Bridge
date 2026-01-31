@@ -6,6 +6,7 @@ import { CompanyName } from '../valueObjects/companyName.js';
 import { JobLocation } from '../valueObjects/jobLocation.js';
 import { JobTitle } from '../valueObjects/jobTitle.js';
 import { SourceFeedEnumType, JobListingEnum } from '../../enums/domainEnums.js';
+import { RawJobData } from '@src/bounded-contexts/JobFeedIngestion/application/ports/jobFetcherPort.js';
 
 export interface JobSourceProps {
         id: string;
@@ -15,15 +16,6 @@ export interface JobSourceProps {
         baseUrl: string;
         isEnabled: boolean;
         lastIngestedAt: Date | null;
-}
-
-export interface RawJobData {
-        externalId: string;
-        title: string;
-        company: string;
-        url: string;
-        location: string;
-        publishedAt: Date;
 }
 
 export class JobSource extends AggregateRoot<JobSourceProps> {
@@ -73,6 +65,8 @@ export class JobSource extends AggregateRoot<JobSourceProps> {
                         company: new CompanyName({ value: rawData.company }),
                         location: new JobLocation({ value: rawData.location }),
                         jobUrl: new JobUrl({ value: rawData.url }),
+                        category: rawData.category ?? 'uncategorized',
+                        salary: rawData.salary ?? 'unspecified',
                         type: JobListingEnum.REMOTE,
                         postedAt: rawData.publishedAt,
                         ingestedAt: new Date()

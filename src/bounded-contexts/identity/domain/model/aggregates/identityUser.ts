@@ -89,7 +89,8 @@ export class IdentityUser extends AggregateRoot<IdentityUserProps> {
         getClaims() {
                 return {
                         id: this.id,
-                        email: this.props.email
+                        email: this.props.email,
+                        role: this.props.role
                 };
         }
 }

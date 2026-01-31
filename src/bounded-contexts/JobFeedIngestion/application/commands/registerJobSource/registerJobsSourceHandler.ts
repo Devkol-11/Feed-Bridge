@@ -1,11 +1,11 @@
-import { JobSourceRepositoryPort } from '../ports/jobSourceRepoPort.js';
-import { RegisterJobSourceDTO } from '../dtos/useCaseDTO.js';
-import { JobSource } from '../../domain/model/aggregates/jobSource.js';
+import { JobSourceRepositoryPort } from '../../../domain/repositories/jobSourceRepoPort.js';
+import { RegisterJobSourceCommand } from './registerJobSourceCommand.js';
+import { JobSource } from '../../../domain/model/aggregates/jobSource.js';
 
-export class RegisterJobs {
+export class RegisterJobSources {
         constructor(private readonly jobSourceRepository: JobSourceRepositoryPort) {}
 
-        async execute(dto: RegisterJobSourceDTO): Promise<{ id: string }> {
+        async execute(dto: RegisterJobSourceCommand): Promise<{ id: string }> {
                 if (!dto.adminId) {
                         throw new Error('Unauthorized: Admin ID is required to register a source.');
                 }
@@ -25,6 +25,8 @@ export class RegisterJobs {
                 });
 
                 await this.jobSourceRepository.save(jobsource);
+
+                jobsource.getProps();
 
                 return {
                         id: jobsource.getProps().id
