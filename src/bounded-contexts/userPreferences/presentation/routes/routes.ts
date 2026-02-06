@@ -1,12 +1,13 @@
 import { Router, Request, Response } from 'express';
 import { HttpStatusCode } from '@src/shared/http/httpStatusCodes.js';
 import { HttpHelpers } from '@src/shared/http/httpHelpers.js';
-import { usecaseHttp } from '../userPreference.module.js';
+import { usecaseHttp } from '../../userPreference.module.js';
 import { authorizeRole } from '@src/shared/middleware/authorizeRole.js';
 import { protectHandler } from '@src/shared/helpers/catchAsync.js';
 
 export function UserPreferenceRoutes(): Router {
         const userPreferenceRoutes = Router();
+
         userPreferenceRoutes.use(authorizeRole(['USER', 'ADMIN']));
 
         userPreferenceRoutes.post(
@@ -62,6 +63,31 @@ export function UserPreferenceRoutes(): Router {
                         return HttpHelpers.sendResponse(res, HttpStatusCode.OK, {
                                 message: `Alerts ${isEnabled ? 'enabled' : 'disabled'} successfully`
                         });
+                })
+        );
+
+        userPreferenceRoutes.get(
+                '/matching-count',
+                protectHandler(async (req: Request, res: Response) => {
+                        const userId = (req as any).user.id;
+
+                        const count = await usecaseHttp.getMatchingJobsCount.execute(userId);
+
+                        return HttpHelpers.sendResponse(res, HttpStatusCode.OK, { count });
+                })
+        );
+
+        userPreferenceRoutes.get(
+                '/find-matches',
+                protectHandler(async (req: Request, res: Response) => {
+                        const { category, location } = req.query;
+
+                        const userIds = await usecaseHttp.findUsersMatchingJob.execute({
+                                category: String(category),
+                                location: String(location)
+                        });
+
+                        return HttpHelpers.sendResponse(res, HttpStatusCode.OK, { userIds });
                 })
         );
 

@@ -3,7 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import { IdentityRoutes } from './bounded-contexts/identity/presentation/http/routes/routes.js';
 import { JobFeedIngestionRoutes } from './bounded-contexts/jobIngesttion & catalog/presentation/http/routes/routes.js';
-import { UserPreferenceRoutes } from './bounded-contexts/userPreferences/presentation/routes.js';
+import { UserPreferenceRoutes } from './bounded-contexts/userPreferences/presentation/routes/routes.js';
 import { applicationErrorHandler } from './shared/middleware/gloalErrorHandler.js';
 
 export function initializeApplication(): Express.Application {
