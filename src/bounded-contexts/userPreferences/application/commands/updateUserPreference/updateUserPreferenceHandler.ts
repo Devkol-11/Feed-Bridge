@@ -1,5 +1,6 @@
 import { UpdateUserPreferenceCommand } from './updateUserPreferenceCommand.js';
 import { UserPreferenceRepositoryPort } from '@src/bounded-contexts/userPreferences/domain/repository/userPreferenceRepository.js';
+import { UserPreferenceDomainExceptions } from '@src/bounded-contexts/userPreferences/domain/exceptions/domainExceptions.js';
 
 export class UpdateUserPreference {
         constructor(private readonly repo: UserPreferenceRepositoryPort) {}
@@ -8,7 +9,7 @@ export class UpdateUserPreference {
                 const profile = await this.repo.findByUserId(command.userId);
 
                 if (!profile) {
-                        throw new Error('User preference profile not found.');
+                        throw new UserPreferenceDomainExceptions.PreferenceNotFound();
                 }
 
                 profile.updateFilters(command.categories, command.locations, command.minimumSalary);

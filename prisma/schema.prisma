@@ -24,8 +24,8 @@ model IdentityUser {
   createdAt    DateTime
   updatedAt    DateTime
 
-  refreshTokens RefreshToken[]
-  resetTokens   ResetToken[]
+  refreshTokens  RefreshToken[]
+  resetTokens    ResetToken[]
   userPreference UserPreference?
 }
 
@@ -124,6 +124,57 @@ enum Job_Listing_Type {
   REMOTE
   ONSITE
   HYBRID
+}
+
+model RecommendationResult {
+  id         String @id @db.Uuid
+  userId     String @db.Uuid
+  jobId      String @db.Uuid
+  totalScore Float // Normalized 0.0 to 1.0
+
+  // Score Breakdown (The "Why")
+  roleScore      Float
+  locationScore  Float
+  seniorityScore Float
+  keywordScore   Float
+
+  explanationText String   @db.Text
+  computedAt      DateTime @default(now())
+
+  // Ensure we don't have duplicate recommendations for the same user/job pair
+  @@unique([userId, jobId])
+  @@index([userId])
+  @@index([totalScore])
+}
+
+// Job Tracking Context
+
+model JobApplication {
+  id            String    @id @db.Uuid
+  userId        String    @db.Uuid
+  jobId         String    @db.Uuid
+  status        String // SAVED, APPLIED, etc.
+  appliedAt     DateTime?
+  lastUpdatedAt DateTime  @default(now())
+
+  // Relations
+  notes ApplicationNote[]
+
+  @@unique([userId, jobId]) // INVARIANT: One application per job per user
+  @@index([userId])
+  @@index([status])
+}
+
+model ApplicationNote {
+  id            String   @id @db.Uuid
+  applicationId String   @db.Uuid
+  content       String   @db.Text
+  createdAt     DateTime @default(now())
+
+  // Relation back to parent
+  application JobApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
 }
 
 model AlertUser {
