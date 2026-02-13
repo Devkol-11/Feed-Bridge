@@ -1,13 +1,13 @@
 import Express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
-import { IdentityRoutes } from './bounded-contexts/identity/presentation/http/routes/routes.js';
-import { JobFeedIngestionRoutes } from './bounded-contexts/jobIngesttion & catalog/presentation/http/routes/routes.js';
-import { UserPreferenceRoutes } from './bounded-contexts/userPreferences/presentation/routes/routes.js';
-import { RecommendationRoutes } from './bounded-contexts/reccomendations/presentation/routes.js';
-import { JobTrackingRoutes } from './bounded-contexts/jobTracking/presentation/routes.js';
-import { AiAssistanceRoutes } from './bounded-contexts/aiAssistance/presentation/routes.js';
-import { AnalyticsRoutes } from './bounded-contexts/analytics/presentation/routes.js';
+import { IdentityRoutes } from './modules/identity/http/routes/routes.js';
+import { JobFeedIngestionRoutes } from './modules/jobIngesttion & catalog/presentation/http/routes/routes.js';
+import { UserPreferenceRoutes } from './modules/userPreferences/http/routes/routes.js';
+import { RecommendationRoutes } from './modules/reccomendations/presentation/routes.js';
+import { JobTrackingRoutes } from './modules/jobTracking/presentation/routes.js';
+import { AiAssistanceRoutes } from './modules/aiAssistance/presentation/routes.js';
+import { AnalyticsRoutes } from './modules/analytics/presentation/routes.js';
 import { applicationErrorHandler } from './shared/middleware/gloalErrorHandler.js';
 
 export function initializeApplication(): Express.Application {

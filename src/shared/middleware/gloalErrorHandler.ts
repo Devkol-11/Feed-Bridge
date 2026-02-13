@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { DomainErrorBase, InfrastructureErrorBase, BaseError } from '../errors/error.js';
+import { DomainErrorBase, InfrastructureErrorBase, BaseError } from '../base/errorBase.js';
 import { HttpStatusCode } from '../http/httpStatusCodes.js';
 import { HttpHelpers } from '../http/httpHelpers.js';
 import { ZodError } from 'zod';
