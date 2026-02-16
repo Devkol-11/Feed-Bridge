@@ -65,19 +65,7 @@ enum IdentityStatus {
   SUSPENDED
 }
 
-model JobSource {
-  id       String   @id @db.Uuid
-  name     String // "Remotive Jobs" (For the UI)
-  provider String // "REMOTIVE" (For the Factory)
-  type     FeedType // RSS, API, SCRAPER
 
-  baseUrl        String // The endpoint or site root
-  isEnabled      Boolean   @default(true)
-  lastIngestedAt DateTime?
-
-  // JobSources own their listings
-  listings JobListing[]
-}
 
 model UserPreference {
   id              String   @id @db.Uuid
@@ -101,8 +89,8 @@ enum FeedType {
 
 model JobListing {
   id            String   @id @db.Uuid
-  jobSourceId   String   @db.Uuid
   externalJobId String // The ID from the source (e.g., Remotive ID)
+  sourceName String
   title         String
   category      String? // New: "Software Development", "DevOps", etc.
   salary        String?
@@ -113,9 +101,6 @@ model JobListing {
   postedAt      DateTime
   ingestedAt    DateTime @default(now())
 
-  jobSource JobSource @relation(fields: [jobSourceId], references: [id])
-
-  @@unique([jobSourceId, externalJobId])
   @@index([category]) // Indexing for fast filtering by category
   @@index([location]) // Indexing for fast filtering by location
 }
@@ -153,7 +138,7 @@ model JobApplication {
   id            String    @id @db.Uuid
   userId        String    @db.Uuid
   jobId         String    @db.Uuid
-  status        String // SAVED, APPLIED, etc.
+  status        APPLICATION_STATUS
   appliedAt     DateTime?
   lastUpdatedAt DateTime  @default(now())
 
@@ -163,6 +148,12 @@ model JobApplication {
   @@unique([userId, jobId]) // INVARIANT: One application per job per user
   @@index([userId])
   @@index([status])
+}
+
+enum APPLICATION_STATUS {
+  SAVED
+  APPLIED
+  INTERVIEW_ROUND
 }
 
 model ApplicationNote {

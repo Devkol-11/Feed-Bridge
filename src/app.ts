@@ -2,11 +2,11 @@ import Express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import { IdentityRoutes } from './modules/identity/http/routes/routes.js';
-import { JobFeedIngestionRoutes } from './modules/jobIngesttion & catalog/presentation/http/routes/routes.js';
+import { JobFeedIngestionRoutes } from './modules/jobCatalog/http/routes/routes.js';
 import { UserPreferenceRoutes } from './modules/userPreferences/http/routes/routes.js';
-import { RecommendationRoutes } from './modules/reccomendations/presentation/routes.js';
-import { JobTrackingRoutes } from './modules/jobTracking/presentation/routes.js';
-import { AiAssistanceRoutes } from './modules/aiAssistance/presentation/routes.js';
+import { RecommendationRoutes } from './modules/reccomendations/http/routes.js';
+import { JobTrackingRoutes } from './modules/jobTracking/http/routes.js';
+import { AiAssistanceRoutes } from './modules/aiAssistance/http/routes.js';
 import { AnalyticsRoutes } from './modules/analytics/presentation/routes.js';
 import { applicationErrorHandler } from './shared/middleware/gloalErrorHandler.js';
 

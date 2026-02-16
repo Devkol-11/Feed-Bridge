@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { GetUserDashboardStats } from '../usecases/getDashBoardStats.js';
+import { GetUserDashboardStats } from '../application/getDashBoardStats.js';
 import { protectHandler } from '@src/shared/helpers/catchAsync.js';
 import { HttpStatusCode } from '@src/shared/http/httpStatusCodes.js';
 import { HttpHelpers } from '@src/shared/http/httpHelpers.js';

@@ -11,11 +11,13 @@ import { randomUUID } from 'node:crypto';
 import { JWT_CLAIMS } from '../dtos/types.js';
 import { dbTransaction } from '@src/shared/helpers/dbTransaction.js';
 import { IdentityEvents } from '../helpers/events/identityEvents.js';
+import { EmailNotificationDispatcher } from '@src/config/redis/jobQueue/Queue.js';
 
 export class RegisterUser {
         private identityRepo = new IdentityRepository();
         private refreshTokenRepo = new RefreshTokenRepository();
         private identityService = new IdentityService();
+        private emailNotificationDispatcher = new EmailNotificationDispatcher();
 
         async execute(data: RegisterRequestDto): Promise<RegisterResponseDto> {
                 const { email, password, firstName, lastName } = data;
@@ -69,7 +71,7 @@ export class RegisterUser {
                         email: newUser.email
                 });
 
-                // push a 'USER REGISTERED EVENT' to the EMAIL_NOTIFICATION QUEUE
+                await this.emailNotificationDispatcher.dispatch('USER_REGISTERED', userRegisteredEvent);
 
                 return {
                         message: 'Regisration successful ',

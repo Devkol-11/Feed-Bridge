@@ -14,7 +14,7 @@ export class Application_Queue {
         }
 }
 
-export class NotificationDispatcher {
+export class EmailNotificationDispatcher {
         private queue: Queue = Application_Queue.create('EMAIL_NOTIFICATION');
 
         async dispatch(name: string, data: object) {
